@@ -2,7 +2,7 @@ import sys
 from openai import OpenAI
 
 def main():
-    client = OpenAI(api_key='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')
+    client = OpenAI(api_key='')
 
     if len(sys.argv) < 2:
         print("Usage: python3 main.py <path to text file1> <path to text file2> <path to text file3> ...")
