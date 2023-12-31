@@ -6,6 +6,7 @@ import pypdf
 
 red = '\033[91m'
 clear_color = '\033[0m'
+cls = lambda: os.system('cls' if os.name=='nt' else 'clear')
 
 def main():
     client = OpenAI(api_key=os.getenv('OPENAI-API-KEY'))
@@ -45,30 +46,33 @@ def main():
             print(f"{red}invalid file extension {clear_color} input either .txt or .pdf files")
         
 
-    input_num = input("\ntype 1, 2 or 9 in terminal\n1: use predifinied input prompt - Überprüfe die folgenden Texte auf inhaltliche ähnlichkeit. Antworte mit einer Zahl zwischen 0 und 1. Nenne die Texte die sich am meisten ähneln und deren Dateinamen, welche in klammern vor dem = vermerkt sind:\n2: use own input prompt\n9: exit the program\n")
-
     message_string = ""
-    match input_num:
-        case "1":
-            message_string = "Überprüfe die folgenden Texte auf inhaltliche ähnlichkeit. Antworte mit einer Zahl zwischen 0 und 1. Nenne die Texte die sich am meisten ähneln und deren Dateinamen, welche in klammern vor dem = vermerkt sind:\n"
-        case "2":
-            message_string = input("enter input prompt to use: ")
-        case "9":
-            exit()
+    while message_string == "":
+        input_num = input("\nenter 1, 2 or 9 in terminal\n1: use predifinied input prompt - Überprüfe die folgenden Texte auf inhaltliche ähnlichkeit. Antworte mit einer Zahl zwischen 0 und 1. Nenne die Texte die sich am meisten ähneln und deren Dateinamen, welche in klammern vor dem = vermerkt sind:\n2: use own input prompt\n9: exit the program\n")
 
+        match input_num:
+            case "1":
+                message_string = "Überprüfe die folgenden Texte auf inhaltliche ähnlichkeit. Antworte mit einer Zahl zwischen 0 und 1. Nenne die Texte die sich am meisten ähneln und deren Dateinamen, welche in klammern vor dem = vermerkt sind:\n"
+            case "2":
+                message_string = input("enter input prompt to use: ")
+            case "9":
+                exit()
+            case _:
+                message_string = ""
+                cls()
+
+    cls()
     counter = 1
     for text in text_list:
         message_string += "Text" + str(counter) + "(" + sys.argv[counter] + ")" + " = " + text
         counter+=1
-
-    print(message_string)
 
     # https://platform.openai.com/docs/guides/rate-limits/usage-tiers?context=tier-free
     # using OpenAI API
     completion = client.chat.completions.create(
        model="gpt-4",
        messages=[
-       {"role": "system", "content": "Du bist ein Experte der deutsche Literatur und analysierst Beruflich Texte auf ihren Inhalt"},
+       {"role": "system", "content": "Du bist ein Experte der deutschen Literatur und analysierst beruflich Texte auf ihren Inhalt"},
        {"role": "user", "content": message_string}]
      )
 
